@@ -124,7 +124,7 @@ vim.keymap.set('n', '<C-S-j>', '<C-w>J', { desc = 'Move window to the lower' })
 vim.keymap.set('n', '<C-S-k>', '<C-w>K', { desc = 'Move window to the upper' })
 
 -- Buffer write, close
-vim.keymap.set('n', '<leader>w', '<cmd>w<cr>', { desc = 'Save ffile' })
+vim.keymap.set('n', '<leader>w', '<cmd>w<cr>', { desc = 'Save file' })
 vim.keymap.set('n', '<leader>bD', '<cmd>bufdo bd<cr>', { desc = '[B]uffer [D]elete all' })
 
 -- [[ Basic Autocommands ]]
@@ -706,6 +706,7 @@ require('lazy').setup({
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         python = { 'ruff_organize_imports', 'ruff_format' },
+        json = { 'jq' },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
