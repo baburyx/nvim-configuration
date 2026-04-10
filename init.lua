@@ -34,6 +34,8 @@ vim.schedule(function()
   vim.o.clipboard = 'unnamedplus'
 end)
 
+vim.g.clipboard = 'osc52'
+
 -- Enable break indent
 vim.o.breakindent = true
 
@@ -120,6 +122,10 @@ vim.keymap.set('n', '<C-S-h>', '<C-w>H', { desc = 'Move window to the left' })
 vim.keymap.set('n', '<C-S-l>', '<C-w>L', { desc = 'Move window to the right' })
 vim.keymap.set('n', '<C-S-j>', '<C-w>J', { desc = 'Move window to the lower' })
 vim.keymap.set('n', '<C-S-k>', '<C-w>K', { desc = 'Move window to the upper' })
+
+-- Buffer write, close
+vim.keymap.set('n', '<leader>w', '<cmd>w<cr>', { desc = 'Save ffile' })
+vim.keymap.set('n', '<leader>bD', '<cmd>bufdo bd<cr>', { desc = '[B]uffer [D]elete all' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
