@@ -1,17 +1,25 @@
 # Neovim Cheatsheet
 
+## Quick Actions
+
+| Key          | Action            |
+| ------------ | ----------------- |
+| `<leader>w`  | Save file         |
+| `<leader>bD` | Close all buffers |
+
 ## Splits (side-by-side editing like Kiro)
 
-| Command         | Action                        |
-| --------------- | ----------------------------- |
-| `:vs file.py`   | Vertical split (side by side) |
-| `:sp file.py`   | Horizontal split (top/bottom) |
-| `<C-h/j/k/l>`   | Move focus between splits     |
-| `<C-S-h/j/k/l>` | Move the split window itself  |
-| `:q`            | Close current split           |
-| `<C-w>=`        | Make all splits equal size    |
-| `<C-w>>`        | Increase width                |
-| `<C-w><`        | Decrease width                |
+| Command         | Action                          |
+| --------------- | ------------------------------- |
+| `:vs file.py`   | Vertical split (side by side)   |
+| `:sp file.py`   | Horizontal split (top/bottom)   |
+| `<C-h/j/k/l>`   | Move focus between splits       |
+| `<C-S-h/j/k/l>` | Move the split window itself    |
+| `<C-w>o`        | Close all splits except current |
+| `:q`            | Close current split             |
+| `<C-w>=`        | Make all splits equal size      |
+| `<C-w>>`        | Increase width                  |
+| `<C-w><`        | Decrease width                  |
 
 ## File Navigation
 
@@ -32,12 +40,14 @@
 | `<leader>bn` | Next tab          |
 | `<leader>bp` | Previous tab      |
 | `<leader>bd` | Close current tab |
+| `<leader>bD` | Close all buffers |
 
 ## Neo-tree (File Explorer)
 
 | Key       | Action                              |
 | --------- | ----------------------------------- |
 | `\`       | Toggle neo-tree                     |
+| `<C-l>`   | Focus back to buffer from neo-tree  |
 | `a`       | Create file (add `/` for directory) |
 | `d`       | Delete                              |
 | `r`       | Rename                              |
@@ -103,10 +113,19 @@
 | `<leader>hd` | Diff against index  |
 | `<leader>tb` | Toggle inline blame |
 
+## File Creation
+
+| Command              | Action                              |
+| -------------------- | ----------------------------------- |
+| `:e path/to/file.py` | Create/open file (save with `:w`)   |
+| `a` in neo-tree      | Create file (add `/` for directory) |
+| `touch file` in term | Create from terminal                |
+
 ## Editing Essentials
 
 | Key          | Action                       |
 | ------------ | ---------------------------- |
+| `<leader>w`  | Save file                    |
 | `<leader>f`  | Format buffer                |
 | `<leader>q`  | Open diagnostics quickfix    |
 | `<leader>th` | Toggle inlay hints           |
@@ -128,16 +147,19 @@
 
 ## General
 
-| Key          | Action                   |
-| ------------ | ------------------------ |
-| `<leader>sh` | Search help              |
-| `<leader>sk` | Search keymaps           |
-| `<leader>sd` | Search diagnostics       |
-| `<leader>sr` | Resume last search       |
-| `:Lazy`      | Plugin manager           |
-| `:Mason`     | LSP/tool installer       |
-| `:LspInfo`   | Check active LSP servers |
-| `?`          | Help in any plugin panel |
+| Key              | Action                        |
+| ---------------- | ----------------------------- |
+| `<leader>sh`     | Search help                   |
+| `<leader>sk`     | Search keymaps                |
+| `<leader>sd`     | Search diagnostics            |
+| `<leader>sr`     | Resume last search            |
+| `:Lazy`          | Plugin manager                |
+| `:Mason`         | LSP/tool installer            |
+| `:LspInfo`       | Check active LSP servers      |
+| `:messages`      | View recent messages/errors   |
+| `:Noice history` | Noice message history         |
+| `:checkhealth`   | Diagnose Neovim/plugin issues |
+| `?`              | Help in any plugin panel      |
 
 ---
 
@@ -282,14 +304,18 @@ Open any file with lots of code and try:
 ```
 nvim .                          # open neovim in project root
 \                               # toggle file explorer
+<C-l>                           # focus back to buffer from neo-tree
 <leader>sf                      # find and open files
 <leader>a                       # harpoon files you work on
 <leader>1/2/3/4                 # jump between harpooned files
 :vs file.py                     # side-by-side editing
 s + chars                       # flash jump anywhere
+<leader>w                       # save file
 <leader>f                       # format code
-:w                              # save
 :sp | term                      # quick terminal
 <leader>u                       # undo history if you mess up
 <leader>sg                      # search across project
+<leader>bn / <leader>bp         # cycle tabs
+<leader>bd                      # close tab
+<leader>bD                      # close all buffers
 ```
