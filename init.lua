@@ -14,6 +14,19 @@ vim.g.undotree_SetFocusWhenToggle = 1
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
 
+-- Rainbow Brackets
+vim.g.rainbow_delimiters = {
+  highlight = {
+    'RainbowDelimiterRed',
+    'RainbowDelimiterYellow',
+    'RainbowDelimiterBlue',
+    'RainbowDelimiterOrange',
+    'RainbowDelimiterGreen',
+    'RainbowDelimiterViolet',
+    'RainbowDelimiterCyan',
+  },
+}
+
 -- Make line numbers default
 vim.o.number = true
 -- You can also add relative line numbers, to help with jumping.
@@ -34,7 +47,7 @@ vim.schedule(function()
   vim.o.clipboard = 'unnamedplus'
 end)
 
-vim.g.clipboard = 'osc52'
+-- vim.g.clipboard = 'osc52'
 
 -- Enable break indent
 vim.o.breakindent = true
@@ -193,19 +206,6 @@ require('lazy').setup({
   -- options to `gitsigns.nvim`.
   --
   -- See `:help gitsigns` to understand what the configuration keys do
-  { -- Adds git related signs to the gutter, as well as utilities for managing changes
-    'lewis6991/gitsigns.nvim',
-    opts = {
-      signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
-      },
-    },
-  },
-
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
   -- This is often very useful to both group configuration, as well as handle
@@ -592,6 +592,14 @@ require('lazy').setup({
       --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
+      local function get_python_path()
+        local venv = vim.fs.find({ '.venv', 'venv' }, { path = vim.fn.getcwd(), upward = true, type = 'directory' })[1]
+        if venv then
+          return venv .. '/bin/python'
+        end
+        return nil
+      end
+
       local servers = {
         -- clangd = {},
         -- gopls = {},
@@ -603,7 +611,11 @@ require('lazy').setup({
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
+        ts_ls = {},
+        bashls = {},
+        jsonls = {
+          filetypes = { 'json', 'jsonc', 'jsonl' },
+        },
         --
 
         basedpyright = {
@@ -611,7 +623,12 @@ require('lazy').setup({
             basedpyright = {
               analysis = {
                 typeCheckingMode = 'basic',
+                autoSearchPaths = true,
+                useLibraryCodeForTypes = true,
               },
+            },
+            python = {
+              pythonPath = get_python_path(),
             },
           },
         },
@@ -650,6 +667,7 @@ require('lazy').setup({
         'stylua', -- Used to format Lua code
         'ruff', -- Python linter + formatter
         'debugpy', -- Python debugger
+        'prettier', -- Markdown / JSON formatter
         'markdownlint', -- Markdown linter
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -666,6 +684,9 @@ require('lazy').setup({
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
             require('lspconfig')[server_name].setup(server)
           end,
+          -- Disable pyright for basedpyright
+          pyright = function() end,
+          harper_ls = function() end,
         },
       }
     end,
@@ -686,7 +707,7 @@ require('lazy').setup({
       },
     },
     opts = {
-      notify_on_error = false,
+      notify_on_error = true,
       format_on_save = function(bufnr)
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
@@ -706,7 +727,10 @@ require('lazy').setup({
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         python = { 'ruff_organize_imports', 'ruff_format' },
-        json = { 'jq' },
+        json = { 'prettier' },
+        jsonc = { 'prettier' },
+        markdown = { 'prettier' },
+        ['markdown.mdx'] = { 'prettier' },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
@@ -812,6 +836,15 @@ require('lazy').setup({
       signature = { enabled = true },
     },
   },
+  -- -- Color theme as catppuccin Mocha
+  -- {
+  --   'catppuccin/nvim',
+  --   name = 'catppuccin',
+  --   priority = 1000,
+  --   config = function()
+  --     vim.cmd.colorscheme 'catppuccin-mocha'
+  --   end,
+  -- },
 
   { -- You can easily change to a different colorscheme.
     -- Change the name of the colorscheme plugin below, and then
@@ -831,7 +864,7 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-storm'
+      vim.cmd.colorscheme 'tokyonight'
     end,
   },
 
@@ -914,7 +947,6 @@ require('lazy').setup({
   require 'kickstart.plugins.indent_line',
   require 'kickstart.plugins.lint',
   require 'kickstart.plugins.autopairs',
-  require 'kickstart.plugins.neo-tree',
   require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
