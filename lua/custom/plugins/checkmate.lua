@@ -28,7 +28,7 @@ return {
       created = {
         style = { fg = '#7f849c' },
         get_value = function()
-          return os.date('%Y-%m-%d %H:%M')
+          return os.date '%Y-%m-%d %H:%M'
         end,
       },
       status = {
@@ -46,7 +46,7 @@ return {
           return { fg = colors[context.value:lower()] or '#c0caf5', bold = true }
         end,
         on_add = function(todo)
-          local _, value = todo.get_metadata('status')
+          local _, value = todo.get_metadata 'status'
           local states = { ['not started'] = 'unchecked', started = 'in_progress', done = 'checked' }
           if states[value] then
             require('checkmate').set_todo_state(todo, states[value])
@@ -62,7 +62,7 @@ return {
       done = {
         style = { fg = '#96de7a' },
         get_value = function()
-          return os.date('%Y-%m-%d %H:%M')
+          return os.date '%Y-%m-%d %H:%M'
         end,
         on_add = function(todo)
           require('checkmate').set_todo_state(todo, 'checked')
@@ -72,6 +72,69 @@ return {
   },
 
   config = function(_, opts)
+    local function create_task()
+      local checkmate = require 'checkmate'
+      -- Keep Checkmate's bulk conversion for visual selections.
+      if vim.fn.mode():match '[vV\22]' then
+        checkmate.create()
+        return
+      end
+
+      local bufnr = vim.api.nvim_get_current_buf()
+      if not require('checkmate.buffer').is_valid(bufnr) then
+        return
+      end
+
+      local row = vim.api.nvim_win_get_cursor(0)[1] - 1
+      local line = vim.api.nvim_get_current_line()
+      local item = require('checkmate.parser').get_todo_item_at_position(bufnr, row, 0, { root_only = true })
+      local create_opts = {}
+      local title = ''
+
+      if item then
+        -- Insert after the whole task, including its detail bullets.
+        vim.api.nvim_win_set_cursor(0, { item.range['end'].row + 1, 0 })
+        create_opts.position = 'below'
+        create_opts.indent = item.range.start.col
+        create_opts.list_marker = item.list_marker.text
+      else
+        local list_item = require('checkmate.parser.helpers').match_list_item(line)
+        local text = vim.trim(list_item and list_item.content or line)
+        if text ~= '' then
+          title = text:match '^%*%*(.-)%*%*$' or text
+        end
+      end
+
+      create_opts.content = ('**%s** @status(not started) @created(%s)'):format(title, os.date '%Y-%m-%d %H:%M')
+      if not checkmate.create(create_opts) then
+        return
+      end
+
+      row = vim.api.nvim_win_get_cursor(0)[1] - 1
+      local header = vim.api.nvim_get_current_line()
+      local prefix = require('checkmate.parser.helpers').match_todo(header)
+      local indent = header:match '^%s*' .. string.rep(' ', #prefix.list_marker + 1)
+      local details = {
+        '- **Ref:** File path / issue / PRD',
+        '- **Goal:** Expected outcome',
+        '- **Progress:** Current state',
+        '- **Next:** Immediate action',
+        '- **Blocked:** External dependencies, if any',
+        '- **Decisions:** Unresolved questions',
+        '- **Session:** Resume command, if applicable',
+      }
+      for i, detail in ipairs(details) do
+        details[i] = indent .. detail
+      end
+      vim.cmd 'undojoin'
+      vim.api.nvim_buf_set_lines(bufnr, row + 1, row + 1, false, details)
+      -- Leave the cursor inside the bold title for editing.
+      vim.api.nvim_win_set_cursor(0, { row + 1, prefix.length + 3 })
+      vim.cmd 'startinsert'
+    end
+
+    opts.keys = vim.deepcopy(require('checkmate.config.defaults').keys)
+    opts.keys['<leader>Tn'] = { rhs = create_task, desc = 'Create task from template', modes = { 'n', 'v' } }
     require('checkmate').setup(opts)
 
     -- Checkmate's metadata callbacks don't run when Tt changes a checkbox.
@@ -93,14 +156,14 @@ return {
             return
           end
 
-          local buffer = require('checkmate.buffer')
+          local buffer = require 'checkmate.buffer'
           if not buffer.is_valid(bufnr) then
             return
           end
 
-          local parser = require('checkmate.parser')
-          local transaction = require('checkmate.transaction')
-          local api = require('checkmate.api')
+          local parser = require 'checkmate.parser'
+          local transaction = require 'checkmate.transaction'
+          local api = require 'checkmate.api'
           local todo_map = parser.get_todo_map(bufnr)
           local add, remove = {}, {}
 
@@ -158,7 +221,7 @@ return {
         return
       end
       local row = vim.api.nvim_win_get_cursor(0)[1] - 1
-      local parser = require('checkmate.parser')
+      local parser = require 'checkmate.parser'
       local item = parser.get_todo_item_at_position(bufnr, row, 0)
       if not item then
         return
@@ -168,9 +231,9 @@ return {
         local refreshed = parser.get_todo_map(bufnr)[item.id]
         local entry = refreshed and refreshed.metadata.by_tag.status
         if entry then
-          require('checkmate').select_metadata_value({
+          require('checkmate').select_metadata_value {
             position = { row = entry.range.start.row, col = entry.range.start.col },
-          })
+          }
         end
       end
 
