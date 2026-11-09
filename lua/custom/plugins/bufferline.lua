@@ -14,7 +14,7 @@ return {
           color_icons = false,
           offsets = {
             {
-              filetype = 'neo-tree',
+              filetype = 'snacks_layout_box',
               text = '',
               separator = true,
             },

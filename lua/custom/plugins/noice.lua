@@ -4,9 +4,24 @@ return {
     event = 'VeryLazy',
     dependencies = {
       'MunifTanjim/nui.nvim',
-      'rcarriga/nvim-notify',
+      'folke/snacks.nvim',
     },
     opts = {
+      views = {
+        notify = { backend = 'snacks' },
+      },
+      routes = {
+        {
+          filter = {
+            event = 'lsp',
+            kind = 'progress',
+            cond = function(message)
+              return vim.tbl_get(message.opts, 'progress', 'client') == 'basedpyright'
+            end,
+          },
+          opts = { skip = true },
+        },
+      },
       lsp = {
         override = {
           ['vim.lsp.util.convert_input_to_markdown_lines'] = true,

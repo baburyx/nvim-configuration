@@ -1,6 +1,7 @@
 return {
   {
     'folke/flash.nvim',
+    enabled = false,
     event = 'VeryLazy',
     opts = {},
     keys = {
@@ -13,7 +14,7 @@ return {
         desc = 'Flash',
       },
       {
-        'S',
+        '<leader>S',
         mode = { 'n', 'x', 'o' },
         function()
           require('flash').treesitter()
